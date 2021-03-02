@@ -108,6 +108,7 @@ public class CuratorFrameworkImpl implements CuratorFramework
 
     public CuratorFrameworkImpl(CuratorFrameworkFactory.Builder builder)
     {
+        // 创建 zk 客户端的工厂
         ZookeeperFactory localZookeeperFactory = makeZookeeperFactory(builder.getZookeeperFactory());
         this.client = new CuratorZookeeperClient
             (
@@ -116,6 +117,8 @@ public class CuratorFrameworkImpl implements CuratorFramework
                 builder.getSessionTimeoutMs(),
                 builder.getConnectionTimeoutMs(),
                 builder.getWaitForShutdownTimeoutMs(),
+
+                // zk 的原生 Watcher，注册一个 watcher 监听器
                 new Watcher()
                 {
                     @Override
@@ -200,6 +203,9 @@ public class CuratorFrameworkImpl implements CuratorFramework
         return (ensembleTracker != null) ? ensembleTracker.getCurrentConfig() : null;
     }
 
+    /**
+     * 创建 zk 客户端的工厂
+     */
     private ZookeeperFactory makeZookeeperFactory(final ZookeeperFactory actualZookeeperFactory)
     {
         return new ZookeeperFactory()
@@ -298,6 +304,9 @@ public class CuratorFrameworkImpl implements CuratorFramework
         return connectionStateErrorPolicy;
     }
 
+    /**
+     *  和 zk server 建立 tcp 长连接
+     */
     @Override
     public void start()
     {
@@ -311,6 +320,7 @@ public class CuratorFrameworkImpl implements CuratorFramework
         {
             connectionStateManager.start(); // ordering dependency - must be called before client.start()
 
+            // 创建一个监听 Curator 客户端 和 zk server 连接状态的线程池
             final ConnectionStateListener listener = new ConnectionStateListener()
             {
                 @Override
@@ -331,8 +341,10 @@ public class CuratorFrameworkImpl implements CuratorFramework
 
             this.getConnectionStateListenable().addListener(listener);
 
+            // 初始化和 zk server 的连接
             client.start();
 
+            // 启动一个线程，处理后台任务的线程池
             executorService = Executors.newSingleThreadScheduledExecutor(threadFactory);
             executorService.submit(new Callable<Object>()
             {
@@ -1039,6 +1051,9 @@ public class CuratorFrameworkImpl implements CuratorFramework
         }
     }
 
+    /**
+     * 通知所有 listener
+     */
     private void processEvent(final CuratorEvent curatorEvent)
     {
         if ( curatorEvent.getType() == CuratorEventType.WATCHED )

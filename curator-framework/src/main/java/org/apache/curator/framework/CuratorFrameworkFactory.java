@@ -93,6 +93,8 @@ public class CuratorFrameworkFactory
     /**
      * Create a new client
      *
+     * 通过 构造器模式，基于 Zookeeper 提供的原生 API，创建一个 Zookeeper 客户端
+     *
      * @param connectString       list of servers to connect to
      * @param sessionTimeoutMs    session timeout
      * @param connectionTimeoutMs connection timeout
@@ -101,11 +103,12 @@ public class CuratorFrameworkFactory
      */
     public static CuratorFramework newClient(String connectString, int sessionTimeoutMs, int connectionTimeoutMs, RetryPolicy retryPolicy)
     {
+        // 构造器模式
         return builder().
-            connectString(connectString).
-            sessionTimeoutMs(sessionTimeoutMs).
-            connectionTimeoutMs(connectionTimeoutMs).
-            retryPolicy(retryPolicy).
+            connectString(connectString).   // zk server 的 ip + 端口号
+            sessionTimeoutMs(sessionTimeoutMs). // 长连接存活时间
+            connectionTimeoutMs(connectionTimeoutMs).   // 连接 zk server 的超时时间，建立 tcp 长连接
+            retryPolicy(retryPolicy).   // 重试策略
             build();
     }
 

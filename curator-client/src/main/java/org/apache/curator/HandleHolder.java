@@ -97,6 +97,8 @@ class HandleHolder
                     if ( data.zooKeeperHandle == null )
                     {
                         resetConnectionString(ensembleProvider.getConnectionString());
+
+                        // 真正调用 zk 提供的原生客户端 API 实例化一个 Zookeeper 客户端
                         data.zooKeeperHandle = zookeeperFactory.newZooKeeper(data.connectionString, sessionTimeout, watcher, canBeReadOnly);
                     }
 

@@ -183,6 +183,10 @@ class ConnectionState implements Watcher, Closeable
         return ensembleProvider;
     }
 
+    /**
+     * 建立和 zk server 的连接
+     * @throws Exception
+     */
     synchronized void reset() throws Exception
     {
         log.debug("reset");
